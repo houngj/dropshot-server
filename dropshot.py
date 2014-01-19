@@ -52,7 +52,17 @@ def post_games():
 
 @post('/players')
 def post_players():
-    return "Cannot create player."
+    input_username = request.forms.get('username')
+    input_password = request.forms.get('password')
+    input_email = request.forms.get('email')
+
+    playerQuery = models.session.query(models.Player).filter(or_(models.Player.username == input_username, models.Player.email == input_email))
+    if (playerQuery.count() > 0):
+        return { 'error' : 'cannot create user' }
+
+    player = models.Player(username = input_username, password = input_password, email = input_email)
+    models.sesion.add(player)
+    models.session.commit()
 
 @post('/login')
 def login():
